@@ -1,6 +1,6 @@
 "use strict";
 
-import { BlockTag, FeeData, Provider, TransactionRequest, TransactionResponse } from "@ethersproject/abstract-provider";
+import { BlockTag, FeeData, Provider, TransactionRequest, TransactionResponse,TrustedTransactionResponse } from "@ethersproject/abstract-provider";
 import { BigNumber, BigNumberish } from "@ethersproject/bignumber";
 import { Bytes, BytesLike } from "@ethersproject/bytes";
 import { Deferrable, defineReadOnly, resolveProperties, shallowCopy } from "@ethersproject/properties";
@@ -124,6 +124,18 @@ export abstract class Signer {
         const tx = await this.populateTransaction(transaction);
         const signedTx = await this.signTransaction(tx);
         return await this.provider.sendTransaction(signedTx);
+    }
+
+    async sendTrustedTransaction(cryptTransaction:string | Promise<string>): Promise<TrustedTransactionResponse> {
+        this._checkProvider("sendTrustedTransaction");
+        // const tx = await this.populateTransaction(transaction);
+        // const signedTx = await this.signTransaction(tx);
+        // // ToDo 加密
+        // const message = Buffer.from(signedTx, 'hex');
+        // const pub = Buffer.from(pubkey, 'hex');
+        // const cipher = await ecies.encrypt(pub, message);
+        // const encryptHex = hexlify(cipher);
+        return await this.provider.sendTrustedTransaction(cryptTransaction);
     }
 
     async getChainId(): Promise<number> {

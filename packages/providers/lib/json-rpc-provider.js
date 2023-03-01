@@ -686,6 +686,8 @@ var JsonRpcProvider = /** @class */ (function (_super) {
                 return ["eth_getStorageAt", [getLowerCase(params.address), (0, bytes_1.hexZeroPad)(params.position, 32), params.blockTag]];
             case "sendTransaction":
                 return ["eth_sendRawTransaction", [params.signedTransaction]];
+            case "sendTrustedTransaction":
+                return ["eth_sendTrustedTransaction", [params.cryptTransaction]];
             case "getBlock":
                 if (params.blockTag) {
                     return ["eth_getBlockByNumber", [params.blockTag, !!params.includeTransactions]];

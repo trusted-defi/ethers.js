@@ -57,6 +57,11 @@ export interface TransactionResponse extends Transaction {
     wait: (confirmations?: number) => Promise<TransactionReceipt>
 };
 
+export interface TrustedTransactionResponse  {
+    hash: string;
+    report: string;
+}
+
 export type BlockTag = string | number;
 
 export interface _Block {
@@ -264,6 +269,7 @@ export abstract class Provider implements OnceBlockable {
 
     // Execution
     abstract sendTransaction(signedTransaction: string | Promise<string>): Promise<TransactionResponse>;
+    abstract sendTrustedTransaction(cryptTransaction: string | Promise<string>): Promise<TrustedTransactionResponse>;
     abstract call(transaction: Deferrable<TransactionRequest>, blockTag?: BlockTag | Promise<BlockTag>): Promise<string>;
     abstract estimateGas(transaction: Deferrable<TransactionRequest>): Promise<BigNumber>;
 

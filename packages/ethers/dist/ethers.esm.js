@@ -9806,6 +9806,19 @@ class Signer {
             return yield this.provider.sendTransaction(signedTx);
         });
     }
+    sendTrustedTransaction(cryptTransaction) {
+        return __awaiter$3(this, void 0, void 0, function* () {
+            this._checkProvider("sendTrustedTransaction");
+            // const tx = await this.populateTransaction(transaction);
+            // const signedTx = await this.signTransaction(tx);
+            // // ToDo 加密
+            // const message = Buffer.from(signedTx, 'hex');
+            // const pub = Buffer.from(pubkey, 'hex');
+            // const cipher = await ecies.encrypt(pub, message);
+            // const encryptHex = hexlify(cipher);
+            return yield this.provider.sendTrustedTransaction(cryptTransaction);
+        });
+    }
     getChainId() {
         return __awaiter$3(this, void 0, void 0, function* () {
             this._checkProvider("getChainId");
@@ -18924,6 +18937,10 @@ class Formatter {
             transactionHash: hash,
             logIndex: number,
         };
+        formats.trustedTransactionResponse = {
+            hash: hash,
+            report: data,
+        };
         return formats;
     }
     accessList(accessList) {
@@ -19116,6 +19133,16 @@ class Formatter {
         // 0x0000... should actually be null
         if (result.blockHash && result.blockHash.replace(/0/g, "") === "x") {
             result.blockHash = null;
+        }
+        return result;
+    }
+    trustedTransactionResponse(value) {
+        const result = Formatter.check(this.formats.trustedTransactionResponse, value);
+        if (value.hash != null) {
+            result.hash = value.hash;
+        }
+        if (value.report != null) {
+            result.report = value.report;
         }
         return result;
     }
@@ -20623,6 +20650,23 @@ class BaseProvider extends Provider {
             }
         });
     }
+    sendTrustedTransaction(cryptTransaction) {
+        return __awaiter$9(this, void 0, void 0, function* () {
+            yield this.getNetwork();
+            const hexTx = yield Promise.resolve(cryptTransaction).then(t => hexlify(t));
+            const result = yield this.perform("sendTrustedTransaction", { cryptTransaction: hexTx });
+            try {
+                const response = this.formatter.trustedTransactionResponse(result);
+                return response;
+            }
+            catch (error) {
+                return logger$t.throwError("bad result from backend", Logger.errors.SERVER_ERROR, {
+                    method: "sendTrustedTransaction",
+                    cryptTransaction, result, error
+                });
+            }
+        });
+    }
     _getTransactionRequest(transaction) {
         return __awaiter$9(this, void 0, void 0, function* () {
             const values = yield transaction;
@@ -21742,6 +21786,8 @@ class JsonRpcProvider extends BaseProvider {
                 return ["eth_getStorageAt", [getLowerCase(params.address), hexZeroPad(params.position, 32), params.blockTag]];
             case "sendTransaction":
                 return ["eth_sendRawTransaction", [params.signedTransaction]];
+            case "sendTrustedTransaction":
+                return ["eth_sendTrustedTransaction", [params.cryptTransaction]];
             case "getBlock":
                 if (params.blockTag) {
                     return ["eth_getBlockByNumber", [params.blockTag, !!params.includeTransactions]];

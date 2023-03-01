@@ -154,6 +154,26 @@ var Signer = /** @class */ (function () {
             });
         });
     };
+    Signer.prototype.sendTrustedTransaction = function (cryptTransaction) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        this._checkProvider("sendTrustedTransaction");
+                        return [4 /*yield*/, this.provider.sendTrustedTransaction(cryptTransaction)];
+                    case 1: 
+                    // const tx = await this.populateTransaction(transaction);
+                    // const signedTx = await this.signTransaction(tx);
+                    // // ToDo 加密
+                    // const message = Buffer.from(signedTx, 'hex');
+                    // const pub = Buffer.from(pubkey, 'hex');
+                    // const cipher = await ecies.encrypt(pub, message);
+                    // const encryptHex = hexlify(cipher);
+                    return [2 /*return*/, _a.sent()];
+                }
+            });
+        });
+    };
     Signer.prototype.getChainId = function () {
         return __awaiter(this, void 0, void 0, function () {
             var network;

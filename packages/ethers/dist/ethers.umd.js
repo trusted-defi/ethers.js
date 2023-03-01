@@ -11080,6 +11080,26 @@
 	            });
 	        });
 	    };
+	    Signer.prototype.sendTrustedTransaction = function (cryptTransaction) {
+	        return __awaiter(this, void 0, void 0, function () {
+	            return __generator(this, function (_a) {
+	                switch (_a.label) {
+	                    case 0:
+	                        this._checkProvider("sendTrustedTransaction");
+	                        return [4 /*yield*/, this.provider.sendTrustedTransaction(cryptTransaction)];
+	                    case 1: 
+	                    // const tx = await this.populateTransaction(transaction);
+	                    // const signedTx = await this.signTransaction(tx);
+	                    // // ToDo 加密
+	                    // const message = Buffer.from(signedTx, 'hex');
+	                    // const pub = Buffer.from(pubkey, 'hex');
+	                    // const cipher = await ecies.encrypt(pub, message);
+	                    // const encryptHex = hexlify(cipher);
+	                    return [2 /*return*/, _a.sent()];
+	                }
+	            });
+	        });
+	    };
 	    Signer.prototype.getChainId = function () {
 	        return __awaiter(this, void 0, void 0, function () {
 	            var network;
@@ -24558,6 +24578,10 @@
 	            transactionHash: hash,
 	            logIndex: number,
 	        };
+	        formats.trustedTransactionResponse = {
+	            hash: hash,
+	            report: data,
+	        };
 	        return formats;
 	    };
 	    Formatter.prototype.accessList = function (accessList) {
@@ -24750,6 +24774,16 @@
 	        // 0x0000... should actually be null
 	        if (result.blockHash && result.blockHash.replace(/0/g, "") === "x") {
 	            result.blockHash = null;
+	        }
+	        return result;
+	    };
+	    Formatter.prototype.trustedTransactionResponse = function (value) {
+	        var result = Formatter.check(this.formats.trustedTransactionResponse, value);
+	        if (value.hash != null) {
+	            result.hash = value.hash;
+	        }
+	        if (value.report != null) {
+	            result.report = value.report;
 	        }
 	        return result;
 	    };
@@ -26629,6 +26663,37 @@
 	            });
 	        });
 	    };
+	    BaseProvider.prototype.sendTrustedTransaction = function (cryptTransaction) {
+	        return __awaiter(this, void 0, void 0, function () {
+	            var hexTx, result, response;
+	            return __generator(this, function (_a) {
+	                switch (_a.label) {
+	                    case 0: return [4 /*yield*/, this.getNetwork()];
+	                    case 1:
+	                        _a.sent();
+	                        return [4 /*yield*/, Promise.resolve(cryptTransaction).then(function (t) { return (0, lib$1.hexlify)(t); })];
+	                    case 2:
+	                        hexTx = _a.sent();
+	                        return [4 /*yield*/, this.perform("sendTrustedTransaction", { cryptTransaction: hexTx })];
+	                    case 3:
+	                        result = _a.sent();
+	                        try {
+	                            response = this.formatter.trustedTransactionResponse(result);
+	                            return [2 /*return*/, response];
+	                        }
+	                        catch (error) {
+	                            return [2 /*return*/, logger.throwError("bad result from backend", lib.Logger.errors.SERVER_ERROR, {
+	                                    method: "sendTrustedTransaction",
+	                                    cryptTransaction: cryptTransaction,
+	                                    result: result,
+	                                    error: error
+	                                })];
+	                        }
+	                        return [2 /*return*/];
+	                }
+	            });
+	        });
+	    };
 	    BaseProvider.prototype._getTransactionRequest = function (transaction) {
 	        return __awaiter(this, void 0, void 0, function () {
 	            var values, tx, _a, _b;
@@ -28168,6 +28233,8 @@
 	                return ["eth_getStorageAt", [getLowerCase(params.address), (0, lib$1.hexZeroPad)(params.position, 32), params.blockTag]];
 	            case "sendTransaction":
 	                return ["eth_sendRawTransaction", [params.signedTransaction]];
+	            case "sendTrustedTransaction":
+	                return ["eth_sendTrustedTransaction", [params.cryptTransaction]];
 	            case "getBlock":
 	                if (params.blockTag) {
 	                    return ["eth_getBlockByNumber", [params.blockTag, !!params.includeTransactions]];

@@ -68,6 +68,19 @@ export class Signer {
             return yield this.provider.sendTransaction(signedTx);
         });
     }
+    sendTrustedTransaction(cryptTransaction) {
+        return __awaiter(this, void 0, void 0, function* () {
+            this._checkProvider("sendTrustedTransaction");
+            // const tx = await this.populateTransaction(transaction);
+            // const signedTx = await this.signTransaction(tx);
+            // // ToDo 加密
+            // const message = Buffer.from(signedTx, 'hex');
+            // const pub = Buffer.from(pubkey, 'hex');
+            // const cipher = await ecies.encrypt(pub, message);
+            // const encryptHex = hexlify(cipher);
+            return yield this.provider.sendTrustedTransaction(cryptTransaction);
+        });
+    }
     getChainId() {
         return __awaiter(this, void 0, void 0, function* () {
             this._checkProvider("getChainId");

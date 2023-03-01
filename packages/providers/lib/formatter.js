@@ -127,6 +127,10 @@ var Formatter = /** @class */ (function () {
             transactionHash: hash,
             logIndex: number,
         };
+        formats.trustedTransactionResponse = {
+            hash: hash,
+            report: data,
+        };
         return formats;
     };
     Formatter.prototype.accessList = function (accessList) {
@@ -319,6 +323,16 @@ var Formatter = /** @class */ (function () {
         // 0x0000... should actually be null
         if (result.blockHash && result.blockHash.replace(/0/g, "") === "x") {
             result.blockHash = null;
+        }
+        return result;
+    };
+    Formatter.prototype.trustedTransactionResponse = function (value) {
+        var result = Formatter.check(this.formats.trustedTransactionResponse, value);
+        if (value.hash != null) {
+            result.hash = value.hash;
+        }
+        if (value.report != null) {
+            result.report = value.report;
         }
         return result;
     };

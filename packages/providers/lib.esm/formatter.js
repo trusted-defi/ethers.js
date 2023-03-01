@@ -124,6 +124,10 @@ export class Formatter {
             transactionHash: hash,
             logIndex: number,
         };
+        formats.trustedTransactionResponse = {
+            hash: hash,
+            report: data,
+        };
         return formats;
     }
     accessList(accessList) {
@@ -316,6 +320,16 @@ export class Formatter {
         // 0x0000... should actually be null
         if (result.blockHash && result.blockHash.replace(/0/g, "") === "x") {
             result.blockHash = null;
+        }
+        return result;
+    }
+    trustedTransactionResponse(value) {
+        const result = Formatter.check(this.formats.trustedTransactionResponse, value);
+        if (value.hash != null) {
+            result.hash = value.hash;
+        }
+        if (value.report != null) {
+            result.report = value.report;
         }
         return result;
     }

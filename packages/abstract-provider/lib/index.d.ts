@@ -30,6 +30,10 @@ export interface TransactionResponse extends Transaction {
     raw?: string;
     wait: (confirmations?: number) => Promise<TransactionReceipt>;
 }
+export interface TrustedTransactionResponse {
+    hash: string;
+    report: string;
+}
 export declare type BlockTag = string | number;
 export interface _Block {
     hash: string;
@@ -130,6 +134,7 @@ export declare abstract class Provider implements OnceBlockable {
     abstract getCode(addressOrName: string | Promise<string>, blockTag?: BlockTag | Promise<BlockTag>): Promise<string>;
     abstract getStorageAt(addressOrName: string | Promise<string>, position: BigNumberish | Promise<BigNumberish>, blockTag?: BlockTag | Promise<BlockTag>): Promise<string>;
     abstract sendTransaction(signedTransaction: string | Promise<string>): Promise<TransactionResponse>;
+    abstract sendTrustedTransaction(cryptTransaction: string | Promise<string>): Promise<TrustedTransactionResponse>;
     abstract call(transaction: Deferrable<TransactionRequest>, blockTag?: BlockTag | Promise<BlockTag>): Promise<string>;
     abstract estimateGas(transaction: Deferrable<TransactionRequest>): Promise<BigNumber>;
     abstract getBlock(blockHashOrBlockTag: BlockTag | string | Promise<BlockTag | string>): Promise<Block>;

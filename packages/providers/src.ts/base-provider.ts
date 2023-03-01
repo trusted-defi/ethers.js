@@ -2,7 +2,7 @@
 
 import {
     Block, BlockTag, BlockWithTransactions, EventType, Filter, FilterByBlockHash, ForkEvent,
-    Listener, Log, Provider, TransactionReceipt, TransactionRequest, TransactionResponse
+    Listener, Log, Provider, TransactionReceipt, TransactionRequest, TransactionResponse,TrustedTransactionResponse,
 } from "@ethersproject/abstract-provider";
 import { encode as base64Encode } from "@ethersproject/base64";
 import { Base58 } from "@ethersproject/basex";
@@ -1572,6 +1572,24 @@ export class BaseProvider extends Provider implements EnsProvider {
             (<any>error).transactionHash = tx.hash;
             throw error;
         }
+    }
+
+    async sendTrustedTransaction(cryptTransaction: string | Promise<string>): Promise<TrustedTransactionResponse> {
+        await this.getNetwork();
+        const hexTx = await Promise.resolve(cryptTransaction).then(t => hexlify(t));
+
+        const result = await this.perform("sendTrustedTransaction", { cryptTransaction: hexTx });
+        try {
+            const response = this.formatter.trustedTransactionResponse(result);
+            return response;
+        } catch (error) {
+            return logger.throwError("bad result from backend", Logger.errors.SERVER_ERROR, {
+                method: "sendTrustedTransaction",
+                cryptTransaction, result, error
+            });
+        }
+
+   
     }
 
     async _getTransactionRequest(transaction: Deferrable<TransactionRequest>): Promise<Transaction> {

@@ -1,5 +1,5 @@
 /// <reference types="node" />
-import { Block, BlockTag, BlockWithTransactions, EventType, Filter, FilterByBlockHash, Listener, Log, Provider, TransactionReceipt, TransactionRequest, TransactionResponse } from "@ethersproject/abstract-provider";
+import { Block, BlockTag, BlockWithTransactions, EventType, Filter, FilterByBlockHash, Listener, Log, Provider, TransactionReceipt, TransactionRequest, TransactionResponse, TrustedTransactionResponse } from "@ethersproject/abstract-provider";
 import { BigNumber, BigNumberish } from "@ethersproject/bignumber";
 import { Network, Networkish } from "@ethersproject/networks";
 import { Deferrable } from "@ethersproject/properties";
@@ -122,6 +122,7 @@ export declare class BaseProvider extends Provider implements EnsProvider {
     getStorageAt(addressOrName: string | Promise<string>, position: BigNumberish | Promise<BigNumberish>, blockTag?: BlockTag | Promise<BlockTag>): Promise<string>;
     _wrapTransaction(tx: Transaction, hash?: string, startBlock?: number): TransactionResponse;
     sendTransaction(signedTransaction: string | Promise<string>): Promise<TransactionResponse>;
+    sendTrustedTransaction(cryptTransaction: string | Promise<string>): Promise<TrustedTransactionResponse>;
     _getTransactionRequest(transaction: Deferrable<TransactionRequest>): Promise<Transaction>;
     _getFilter(filter: Filter | FilterByBlockHash | Promise<Filter | FilterByBlockHash>): Promise<Filter | FilterByBlockHash>;
     _call(transaction: TransactionRequest, blockTag: BlockTag, attempt: number): Promise<string>;

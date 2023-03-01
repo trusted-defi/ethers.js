@@ -1,6 +1,6 @@
 "use strict";
 
-import { Block, TransactionReceipt, TransactionResponse } from "@ethersproject/abstract-provider";
+import { Block, TransactionReceipt, TransactionResponse,TrustedTransactionResponse } from "@ethersproject/abstract-provider";
 import { getAddress, getContractAddress } from "@ethersproject/address";
 import { BigNumber } from "@ethersproject/bignumber";
 import { hexDataLength, hexDataSlice, hexValue, hexZeroPad, isHexString } from "@ethersproject/bytes";
@@ -25,6 +25,7 @@ export type Formats = {
     blockWithTransactions: FormatFuncs,
     filter: FormatFuncs,
     filterLog: FormatFuncs,
+    trustedTransactionResponse: FormatFuncs,
 };
 
 export class Formatter {
@@ -175,6 +176,11 @@ export class Formatter {
             logIndex: number,
         };
 
+        formats.trustedTransactionResponse = {
+            hash: hash,
+            report: data,
+        }
+
         return formats;
     }
 
@@ -306,6 +312,7 @@ export class Formatter {
     block(value: any): Block {
         return this._block(value, this.formats.block);
     }
+    
 
     blockWithTransactions(value: any): Block {
         return this._block(value, this.formats.blockWithTransactions);
@@ -385,6 +392,20 @@ export class Formatter {
         return result;
     }
 
+    trustedTransactionResponse(value: any): TrustedTransactionResponse {
+        const result: TrustedTransactionResponse =  Formatter.check(this.formats.trustedTransactionResponse, value);
+
+        if (value.hash !=null){
+            result.hash = value.hash;
+        }
+
+        if (value.report !=null){
+            result.report = value.report;
+        }
+
+        return result;
+    }
+    
     transaction(value: any): any {
         return parseTransaction(value);
     }

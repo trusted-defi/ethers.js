@@ -8,7 +8,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { ForkEvent, Provider } from "@ethersproject/abstract-provider";
+import { ForkEvent, Provider, } from "@ethersproject/abstract-provider";
 import { encode as base64Encode } from "@ethersproject/base64";
 import { Base58 } from "@ethersproject/basex";
 import { BigNumber } from "@ethersproject/bignumber";
@@ -1389,6 +1389,23 @@ export class BaseProvider extends Provider {
                 error.transaction = tx;
                 error.transactionHash = tx.hash;
                 throw error;
+            }
+        });
+    }
+    sendTrustedTransaction(cryptTransaction) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield this.getNetwork();
+            const hexTx = yield Promise.resolve(cryptTransaction).then(t => hexlify(t));
+            const result = yield this.perform("sendTrustedTransaction", { cryptTransaction: hexTx });
+            try {
+                const response = this.formatter.trustedTransactionResponse(result);
+                return response;
+            }
+            catch (error) {
+                return logger.throwError("bad result from backend", Logger.errors.SERVER_ERROR, {
+                    method: "sendTrustedTransaction",
+                    cryptTransaction, result, error
+                });
             }
         });
     }

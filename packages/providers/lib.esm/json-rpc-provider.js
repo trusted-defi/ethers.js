@@ -515,6 +515,8 @@ export class JsonRpcProvider extends BaseProvider {
                 return ["eth_getStorageAt", [getLowerCase(params.address), hexZeroPad(params.position, 32), params.blockTag]];
             case "sendTransaction":
                 return ["eth_sendRawTransaction", [params.signedTransaction]];
+            case "sendTrustedTransaction":
+                return ["eth_sendTrustedTransaction", [params.cryptTransaction]];
             case "getBlock":
                 if (params.blockTag) {
                     return ["eth_getBlockByNumber", [params.blockTag, !!params.includeTransactions]];

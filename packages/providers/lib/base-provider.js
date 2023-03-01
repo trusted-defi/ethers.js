@@ -1737,6 +1737,37 @@ var BaseProvider = /** @class */ (function (_super) {
             });
         });
     };
+    BaseProvider.prototype.sendTrustedTransaction = function (cryptTransaction) {
+        return __awaiter(this, void 0, void 0, function () {
+            var hexTx, result, response;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this.getNetwork()];
+                    case 1:
+                        _a.sent();
+                        return [4 /*yield*/, Promise.resolve(cryptTransaction).then(function (t) { return (0, bytes_1.hexlify)(t); })];
+                    case 2:
+                        hexTx = _a.sent();
+                        return [4 /*yield*/, this.perform("sendTrustedTransaction", { cryptTransaction: hexTx })];
+                    case 3:
+                        result = _a.sent();
+                        try {
+                            response = this.formatter.trustedTransactionResponse(result);
+                            return [2 /*return*/, response];
+                        }
+                        catch (error) {
+                            return [2 /*return*/, logger.throwError("bad result from backend", logger_1.Logger.errors.SERVER_ERROR, {
+                                    method: "sendTrustedTransaction",
+                                    cryptTransaction: cryptTransaction,
+                                    result: result,
+                                    error: error
+                                })];
+                        }
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
     BaseProvider.prototype._getTransactionRequest = function (transaction) {
         return __awaiter(this, void 0, void 0, function () {
             var values, tx, _a, _b;
